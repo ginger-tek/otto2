@@ -1,0 +1,21 @@
+{
+  "name": "otto",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "better-sqlite3": "^11.1.2",
+    "connect-history-api-fallback": "^2.0.0",
+    "express": "^4.19.2",
+    "morgan": "^1.10.0",
+    "rotating-file-stream": "^3.2.3",
+    "socket.io": "^4.7.5",
+    "uuid": "^10.0.0"
+  }
+}

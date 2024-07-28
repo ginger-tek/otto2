@@ -1,0 +1,4 @@
+data
+rest.http
+node_modules
+.env
