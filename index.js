@@ -34,16 +34,16 @@ const execd = spawn('node', ['./src/execDaemon.js'], {
 mainLog.info(`Executor service running, PID: ${execd.pid}`)
 execd.stdout.on('data', data => execLog.info(`${data || ''}`))
 execd.stderr.on('data', data => execLog.error(`${data || ''}`))
-execd.on('close', code => execLog.error(`${code || ''}`))
+execd.on('close', code => execLog.info(`Process has exited with code ${code || ''}`))
 
 const schdd = spawn('node', ['./src/schdDaemon.js'], {
   cwd: process.cwd(),
   shell: process.env.comspec
 })
 mainLog.info(`Scheduler service running, PID: ${schdd.pid}`)
-schdd.stdout.on('data', data => schdLog.info(`Schd: ${data || ''}`))
-schdd.stderr.on('data', data => schdLog.error(`Schd: ${data || ''}`))
-schdd.on('close', code => schdLog.error(`Schd: ${code || ''}`))
+schdd.stdout.on('data', data => schdLog.info(`${data || ''}`))
+schdd.stderr.on('data', data => schdLog.error(`${data || ''}`))
+schdd.on('close', code => schdLog.info(`Process has exited with code ${code || ''}`))
 
 const http = createServer(app)
 const io = new Server(http)
