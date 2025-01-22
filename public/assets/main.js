@@ -1,4 +1,3 @@
-import PicoVue from 'https://unpkg.com/@ginger-tek/picovue/picovue.js'
 import App from './app.js'
 import router from './router.js'
 
