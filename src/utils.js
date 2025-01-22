@@ -114,3 +114,7 @@ export async function executeJob(job) {
   })
   return job
 }
+
+export async function delayMs(ms = 1000) {
+  return new Promise(r => setTimeout(r, ms))
+}
