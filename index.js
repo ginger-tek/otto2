@@ -5,7 +5,7 @@ import history from 'connect-history-api-fallback'
 import { spawn } from 'child_process'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
-import { createLogStream, createLogger } from './src/utils.js'
+import { createLogStream, createLogger, delayMs } from './src/utils.js'
 import pkg from './package.json' with { type: 'json' }
 
 if (!fs.existsSync('data')) {
@@ -17,7 +17,7 @@ if (!fs.existsSync('data')) {
 import apiController from './src/cntlr/api.js'
 import { list } from './src/svc/jobs.js'
 
-const port = 4000
+const port = process.env.PORT || 4000
 const app = express()
 
 const mainLog = createLogger(createLogStream('main.log'))
@@ -49,9 +49,11 @@ const http = createServer(app)
 const io = new Server(http)
 io.on('connection', socket => {
   const sendJobData = async () => {
-    const jobs = list()
-    socket.emit('monitor-data', jobs)
-    setTimeout(sendJobData, 1000 - new Date().getMilliseconds())
+    while (socket.connected) {
+      const jobs = list()
+      socket.emit('monitor-data', jobs)
+      await delayMs(1000 - new Date().getMilliseconds())
+    }
   }
   socket.on('get-monitor', sendJobData)
   sendJobData()
