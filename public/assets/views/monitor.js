@@ -1,26 +1,28 @@
 import { toLocal, toTimeStr } from '../utils.js'
 
 export default {
-  template: `<pv-table :items="jobs" :fields="fields">
-    <template #id="{id}">
-      <router-link :to="'/jobs/'+id">View</router-link>
-    </template>
-    <template #def-name="{defId,defName}">
-      <router-link :to="'/definitions/'+defId">{{ defName }}</router-link>
-    </template>
-    <template #status="{status}">
-      <span :aria-busy="status == 'Running'">{{ status }}</span>
-    </template>
-    <template #start-time="{startTime}">
-      {{ toLocal(startTime) }}
-    </template>
-    <template #end-time="{endTime}">
-      {{ toLocal(endTime) }}
-    </template>
-    <template #elapsed="{elapsed}">
-      {{ toTimeStr(elapsed) }}
-    </template>
-  </pv-table>`,
+  template: `<article>
+    <pv-table :items="jobs" :fields="fields">
+      <template #id="{id}">
+        <router-link :to="'/jobs/'+id">View</router-link>
+      </template>
+      <template #def-name="{defId,defName}">
+        <router-link :to="'/definitions/'+defId">{{ defName }}</router-link>
+      </template>
+      <template #status="{status}">
+        <span :aria-busy="status == 'Running'">{{ status }}</span>
+      </template>
+      <template #start-time="{startTime}">
+        {{ toLocal(startTime) }}
+      </template>
+      <template #end-time="{endTime}">
+        {{ toLocal(endTime) }}
+      </template>
+      <template #elapsed="{elapsed}">
+        {{ toTimeStr(elapsed) }}
+      </template>
+    </pv-table>
+  </article>`,
   setup() {
     const jobs = Vue.ref([])
     const fields = [
