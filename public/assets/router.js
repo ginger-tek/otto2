@@ -1,5 +1,6 @@
 const routes = [
-  { path: '/', component: () => import('./views/monitor.js') },
+  { path: '/', redirect: '/monitor' },
+  { path: '/monitor', component: () => import('./views/monitor.js') },
   { path: '/definitions', component: () => import('./views/definitions.js') },
   { path: '/definitions/:id', component: () => import('./views/definition.js') },
   { path: '/history', component: () => import('./views/history.js') }

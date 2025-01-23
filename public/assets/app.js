@@ -8,7 +8,7 @@ export default {
       </ul>
       <ul>
         <li>
-          <router-link to="/">Monitor</router-link>
+          <router-link to="/monitor">Monitor</router-link>
         </li>
         <li>
           <router-link to="/definitions">Definitions</router-link>
