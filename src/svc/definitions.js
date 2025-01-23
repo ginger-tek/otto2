@@ -1,10 +1,10 @@
-import db from './db.js'
+import { connect } from './db.js'
 import { v4 as uuidv4 } from 'uuid'
 
 export function create(name) {
   try {
     const id = uuidv4()
-    db
+    connect()
       .prepare(`insert into definitions(id, name) values(:id, :name)`)
       .run({ id, name })
     return [null, read(id)]
@@ -16,7 +16,7 @@ export function create(name) {
 }
 
 export function read(id) {
-  return db
+  return connect()
     .prepare(`select *
       from definitions where id = :id`)
     .get({ id })
@@ -26,7 +26,7 @@ export function list(filters = {}, full = false) {
   let where = []
   if (filters.enabled)
     where.push(`enabled = :enabled`)
-  const stmt = db
+  const stmt = connect()
     .prepare(`select ${full ? '*' : 'id, name, created, updated'}
       from definitions
       ${where.length ? 'where ' + where.join(' and ') : ''}
@@ -44,7 +44,7 @@ export function listJobs(id, filters = {}) {
     where.push(`startTime = :start`)
   if (end)
     where.push(`endTime = :end`)
-  return db
+  return connect()
     .prepare(`select *
       from jobs where defId = :id
       ${where.length ? where.join(' and ') : ''}
@@ -54,7 +54,7 @@ export function listJobs(id, filters = {}) {
 
 export function update({ id, created, updated, ...fields }) {
   try {
-    db
+    connect()
       .prepare(`update definitions set
         ${Object.keys(fields).map(f => `${f} = :${f}`).join(`,\n`)},
         updated = current_timestamp
@@ -68,8 +68,8 @@ export function update({ id, created, updated, ...fields }) {
 
 export function destroy(id) {
   try {
-    const { changes } = db
-      .prepare(`delete from definition where id = :id limit 1`)
+    const { changes } = connect()
+      .prepare(`delete from definitions where id = :id limit 1`)
       .run({ id })
     return [null, changes == 1]
   } catch (ex) {
