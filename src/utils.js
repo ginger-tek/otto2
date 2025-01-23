@@ -6,9 +6,10 @@ import { createStream } from 'rotating-file-stream'
 
 const timeRgx = /^(\d{2}):(\d{2})$/
 const everyRgx = /^(\d{1})[stndrth]{2} (\w+)$/i
-const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri']
+export const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri']
 
 export function createLogStream(fileName) {
+  if (!fs.existsSync('data/logs')) fs.mkdirSync('data/logs')
   return createStream(fileName, {
     size: '10M',
     interval: '1d',
@@ -31,7 +32,7 @@ export function createLogger(stream) {
 }
 
 export function timeToNextDate(expr, cur = new Date()) {
-  const [_m, hours, mins] = expr.match(timeRgx)
+  const [_, hours, mins] = expr.match(timeRgx)
   const diff = (hours * 60 * 60) + (mins * 60) * 1000
   let date = new Date(Math.round(cur.getTime() / diff) * diff)
   if (date < cur)
@@ -40,7 +41,7 @@ export function timeToNextDate(expr, cur = new Date()) {
 }
 
 export function dayIntToNextDate(expr, cur = new Date()) {
-  let [_m, dayInt, dayName] = expr.match(everyRgx)
+  let [_, dayInt, dayName] = expr.match(everyRgx)
   dayName = dayName.slice(0, 3)
   const start = new Date(cur.getFullYear(), cur.getMonth(), 1, 0, 0, 0, 0)
   if (days.includes(dayName)) {
@@ -51,7 +52,7 @@ export function dayIntToNextDate(expr, cur = new Date()) {
 }
 
 export function parseSchedule(def) {
-  const dt = [def.schdStartDate, def.schdStartTime].join(' ').trim()
+  const dt = [def.schdStartDate, def.schdStartTime].join(' ').trim() + (def.schdTimezoneOffset || 'Z')
   let date = dt ? new Date(Date.parse(dt)) : new Date(new Date(new Date().setSeconds(0)).setMilliseconds(0))
   if (new Date(Date.parse(def.endDate + ' ' + def.endTime)) < date)
     return false
@@ -76,14 +77,15 @@ export function scheduleDefinition(def, dateTime = new Date()) {
   job.execPath = exec.path
   job.stdLog = `data/logs/jobs/${job.id}_${def.name}.log`
   job.errLog = `data/logs/jobs/${job.id}_${def.name}.err`
-  if (!fs.existsSync(def.script)) {
+  if (def.scriptType == 'inline') {
     job.scriptPath = `data/tmp/${def.id}${Date.now()}.script`
-    fs.writeFileSync(script, fs.readFileSync(def.script, { encoding: 'utf-8' }))
+    fs.writeFileSync(job.scriptPath, def.script)
+    fs.chmodSync(job.scriptPath, 0o777)
   } else job.scriptPath = def.script
-  const schdJob = jobs.update(job)
-  if (schdJob[0])
+  const [schdJobError, schdJob] = jobs.update(job)
+  if (schdJobError)
     return console.error(`Failed to schedule job for ${def.name}`)
-  return schdJob[1]
+  return schdJob
 }
 
 export async function executeJob(job) {
