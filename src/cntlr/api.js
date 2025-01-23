@@ -8,5 +8,6 @@ const router = Router()
 router.use('/definitions', definitions)
 router.use('/jobs', jobs)
 router.use('/executors', executors)
+router.all('*', (_, res) => res.status(404).json({ error: 'Route not found' }))
 
 export default router
