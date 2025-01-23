@@ -10,6 +10,8 @@ const routes = [
   { path: '/executors/new', component: () => import('./views/executors/create.js') },
   { path: '/executors/:id', component: () => import('./views/executors/edit.js') },
 
+  { path: '/jobs/:id', component: () => import('./views/job.js') },
+
   { path: '/history', component: () => import('./views/history.js') }
 ]
 
