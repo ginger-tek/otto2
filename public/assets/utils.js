@@ -21,7 +21,22 @@ export function toTimeStr(n = 0) {
 }
 
 export function getTimezonesWithOffsets() {
-  return [
-    { timeZone: 'America/New_York', offset: '-05:00' }
-  ]
+  const results = []
+  for (let timeZone of Intl.supportedValuesOf("timeZone")) {
+    const options = { timeZone, timeZoneName: "longOffset" }
+    const dateText = Intl.DateTimeFormat([], options).format(new Date())
+    let timezoneString = dateText.split(" ")[1].slice(3) || "+0"
+    let offsetNum = parseInt(timezoneString.split(":")[0]) * 60
+    if (timezoneString.includes(":"))
+      offsetNum = offsetNum + parseInt(timezoneString.split(":")[1])
+    let offset = offsetNum / 60
+    let offsetRawNum = Math.abs(offset)
+    let mins = !Number.isInteger(offsetRawNum) ? Math.abs(offsetNum) % 60 : 0
+    let hours = Math.floor(offsetRawNum)
+    offset = `${offset < 0 ? "-" : "+"}${("" + hours).padStart(2, "0")}:${("" + mins).padStart(2, "0")}`
+    results.push({ timeZone, offsetNum, offset })
+  }
+  return results
+    .filter((tz, x, s) => x === s.findIndex(o => o.timeZone.match(new RegExp(`(${tz.timeZone.split('\/')[0]}|New_York)`)) && o.offset == tz.offset))
+    .toSorted((a, b) => a.offsetNum - b.offsetNum)
 }
