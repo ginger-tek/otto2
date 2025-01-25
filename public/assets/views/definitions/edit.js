@@ -20,7 +20,7 @@ export default {
         </label>
         <label>Timezone
           <select v-model="def.schdTimezoneOffset">
-            <option v-for="tz in getTimezonesWithOffsets()" :value="tz.offset">{{ tz.timeZone }}</option>
+            <option v-for="tz in getTimezonesWithOffsets()" :value="tz.offset" :key="tz.timeZone">{{ tz.timeZone }} ({{ tz.offset }})</option>
           </select>
         </label>
         <div class="grid">
@@ -39,7 +39,7 @@ export default {
         </div>
         <label>Schedule Interval
           <input type="text" v-model="def.schdInterval">
-          <small>Valid options: <code>{n}st|nd|rd|th Sun|Mon|Tue|Wed|Thu|Fri|Sat @ {n} AM|PM</code></small>
+          <small>Syntax: <code>{n}st|nd|rd|th Sun|Mon|Tue|Wed|Thu|Fri|Sat @ {n} AM|PM</code></small>
         </label>
         <label>Executor
           <select v-model="def.execId" required>
