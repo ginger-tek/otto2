@@ -39,24 +39,33 @@ export default {
         </div>
         <label>Schedule Interval
           <input type="text" v-model="def.schdInterval">
-          <small>Syntax: <code>{n}st|nd|rd|th Sun|Mon|Tue|Wed|Thu|Fri|Sat @ {n} AM|PM</code></small>
+          <small>
+            <p>Syntax:</p>
+            <ul>
+              <li>Time Interval: <code>{hours}:{minutes}</code> = "Run every x hours and x minutes"</li>
+              <li>Monthly Interval at start of day: <code>{n}st|nd|rd|th Sun|Mon|Tue|Wed|Thu|Fri|Sat</code> = "Run every nth day of the month at start of day"</li>
+              <li>Monthly Interval w/ Time of Day: <code>{n}st|nd|rd|th Sun|Mon|Tue|Wed|Thu|Fri|Sat @ {hour}:{minute} AM|PM</code> = "Run every nth day of the month at this time of day"</li>
+            </ul>
+          </small>
         </label>
-        <label>Executor
-          <select v-model="def.execId" required>
-            <option :value="null">Select one...</option>
-            <option v-for="exec in execs" :value="exec.id" :key="exec.name">{{ exec.name }}</option>
-          </select>
-        </label>
-        <label>Script Type
-          <select v-model="def.scriptType">
-            <option value="file">File</option>
-            <option value="inline">Inline</option>
-          </select>
-        </label>
+        <div class="grid">
+          <label>Executor
+            <select v-model="def.execId" required>
+              <option :value="null">Select one...</option>
+              <option v-for="exec in execs" :value="exec.id" :key="exec.name">{{ exec.name }}</option>
+            </select>
+          </label>
+          <label>Script Type
+            <select v-model="def.scriptType">
+              <option value="file">File</option>
+              <option value="inline">Inline</option>
+            </select>
+          </label>
+        </div>
         <div class="grid">
           <label>Script
             <input v-if="def.scriptType == 'file'" type="text" style="font-family:monospace" v-model="def.script">
-            <textarea v-else-if="def.scriptType == 'inline'" style="font-family:monospace" v-model="def.script"></textarea>
+            <textarea v-else-if="def.scriptType == 'inline'" rows="20" style="font-family:monospace" v-model="def.script"></textarea>
           </label>
           <label v-if="def.scriptType == 'file'">Script Args
             <input type="text" v-model="def.scriptArgs">

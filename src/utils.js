@@ -5,7 +5,8 @@ import fs from 'fs'
 import { createStream } from 'rotating-file-stream'
 
 const timeRgx = /^(\d{2}):(\d{2})$/
-const everyRgx = /^(\d{1})[stndrth]{2} (\w+)$/i
+const everyRgx = /^(\d{1})[stndrth]{2} (\w+)/i
+const dayTimeRgx = /@ (\d{2}):(\d{2}) (AM|PM)$/i
 export const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri']
 
 export function createLogStream(fileName) {
@@ -33,10 +34,8 @@ export function createLogger(stream) {
 
 export function timeToNextDate(expr, cur = new Date()) {
   const [_, hours, mins] = expr.match(timeRgx)
-  const diff = (hours * 60 * 60) + (mins * 60) * 1000
-  let date = new Date(Math.round(cur.getTime() / diff) * diff)
-  if (date < cur)
-    date = new Date(Math.ceil((cur.getTime() / diff)) * diff + diff)
+  const diff = (parseInt(hours) * 60 * 60) + (parseInt(mins) * 60) * 1000
+  let date = new Date(Math.ceil((cur.getTime() / diff)) * diff + diff)
   return date
 }
 
@@ -48,11 +47,17 @@ export function dayIntToNextDate(expr, cur = new Date()) {
     while (days[start.getDay()] != dayName)
       start.setDate(start.getDate() + 1)
   }
-  return new Date(start.setDate(start.getDate() + ((dayInt - 1) * 7)))
+  const date = new Date(start.setDate(start.getDate() + ((dayInt - 1) * 7)))
+  if (dayTimeRgx.test(expr)) {
+    let [_, hour, min, ampm] = expr.match(dayTimeRgx)
+    date.setHours(ampm.match(/pm/) ? 24 - hour : hour)
+    date.setMinutes(min)
+  }
+  return date
 }
 
 export function parseSchedule(def) {
-  const dt = [def.schdStartDate, def.schdStartTime].join(' ').trim() + (def.schdTimezoneOffset || 'Z')
+  const dt = def.schdStartDate || def.schdStartTime ? [def.schdStartDate, def.schdStartTime].join(' ').trim() + (def.schdTimezoneOffset || 'Z') : false
   let date = dt ? new Date(Date.parse(dt)) : new Date(new Date(new Date().setSeconds(0)).setMilliseconds(0))
   if (new Date(Date.parse(def.endDate + ' ' + def.endTime)) < date)
     return false
@@ -89,6 +94,11 @@ export function scheduleDefinition(def, dateTime = new Date()) {
 }
 
 export async function executeJob(job) {
+  const exists = jobs.findByDefinition(job.defId, job.startTime)
+  if (exists && exists.status == 'Running') {
+    console.log(`Definition ${job.defId} already has a job running`)
+    return
+  }
   console.log(`Submitting job ${job.id}`)
   const proc = spawn(job.scriptPath, [job.scriptArgs], {
     shell: job.execPath
