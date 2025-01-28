@@ -8,16 +8,16 @@ export default {
       </ul>
       <ul>
         <li>
-          <router-link to="/monitor">Monitor</router-link>
+          <router-link to="/monitor"><i class="bi bi-activity"></i> Monitor</router-link>
         </li>
         <li>
-          <router-link to="/definitions">Definitions</router-link>
+          <router-link to="/definitions"><i class="bi bi-files"></i> Definitions</router-link>
         </li>
         <li>
-          <router-link to="/executors">Executors</router-link>
+          <router-link to="/executors"><i class="bi bi-terminal"></i> Executors</router-link>
         </li>
         <li>
-          <router-link to="/history">History</router-link>
+          <router-link to="/history"><i class="bi bi-clock-history"></i> History</router-link>
         </li>
       </ul>
     </nav>

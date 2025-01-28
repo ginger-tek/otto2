@@ -38,14 +38,14 @@ export default {
           <template #title>
             Standard Output
           </template>
-          <button @click="getStdLog">Refresh</button>
+          <button @click="getStdLog"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
           <textarea rows="20" style="font-family:monospace">{{ stdLog }}</textarea>
         </pv-tab>
         <pv-tab>
           <template #title>
             Error Output
           </template>
-          <button @click="getErrLog">Refresh</button>
+          <button @click="getErrLog"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
           <textarea rows="20" style="font-family:monospace">{{ errLog }}</textarea>
         </pv-tab>
       </pv-tabs>

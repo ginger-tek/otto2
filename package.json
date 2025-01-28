@@ -14,6 +14,7 @@
     "@ginger-tek/picovue": "^2.0.12",
     "@picocss/pico": "^2.0.6",
     "better-sqlite3": "^11.1.2",
+    "bootstrap-icons": "^1.11.3",
     "connect-history-api-fallback": "^2.0.0",
     "express": "^4.19.2",
     "morgan": "^1.10.0",

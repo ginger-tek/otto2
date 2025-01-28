@@ -7,14 +7,14 @@ export default {
         <div class="grid">
           <h2>{{ exec.name || '...' }}</h2>
           <div class="grid">
-            <button type="submit" style="width:auto">Save</button>
-            <button type="button" class="secondary" @click="showDelete=true">Delete</button>
+            <button type="submit" style="width:auto"><i class="bi bi-floppy"></i> Save</button>
+            <button type="button" class="secondary" @click="showDelete=true"><i class="bi bi-trash"></i> Delete</button>
           </div>
         </div>
         <label>Name
           <input type="text" v-model="exec.name" required>
         </label>
-        <label>Path
+        <label>Executable Path
           <input type="text" v-model="exec.path" style="font-family:monospace" required>
         </label>
         <hr>
