@@ -2,7 +2,7 @@ import { toLocal, toTimeStr } from '../utils.js'
 
 export default {
   template: `<article>
-    <pv-table :items="jobs" :fields="fields">
+    <pv-table :items="jobs" :fields="fields" :busy="loading" sort filter>
       <template #id="{id}">
         <router-link :to="'/jobs/'+id">View</router-link>
       </template>
@@ -21,6 +21,9 @@ export default {
       <template #elapsed="{elapsed}">
         {{ toTimeStr(elapsed) }}
       </template>
+      <template #empty>
+        No recent job executions to show
+      </template>
     </pv-table>
   </article>`,
   setup() {
@@ -33,10 +36,14 @@ export default {
       'endTime',
       'elapsed'
     ]
+    const loading = Vue.ref(true)
     const socket = io()
 
     Vue.onMounted(() => {
-      socket.on('monitor-data', d => jobs.value = d)
+      socket.on('monitor-data', d => {
+        jobs.value = d
+        loading.value = false
+      })
     })
 
     Vue.onUnmounted(() => {
@@ -47,7 +54,8 @@ export default {
       jobs,
       fields,
       toLocal,
-      toTimeStr
+      toTimeStr,
+      loading
     }
   }
 }
