@@ -1,15 +1,23 @@
-import { api } from '../../utils.js'
+import { api, toLocal } from '../../utils.js'
+import CreateDefinitionModal from '../../components/createDefinitionModal.js'
 
 export default {
+  components: { CreateDefinitionModal },
   template: `<div class="container">
     <article>
       <div style="display:flex;justify-content:space-between">
         <h2>Definitions</h2>
-        <a href="/definitions/new" role="button">New Definition</a>
+        <create-definition-modal></create-definition-modal>
       </div>
-      <pv-table :items="defs" :fields="fields">
+      <pv-table :items="defs" :fields="fields" :busy="loading">
         <template #name="{id,name}">
           <router-link :to="'/definitions/'+id">{{ name }}</router-link>
+        </template>
+        <template #created="{created}">
+          {{ toLocal(created) }}
+        </template>
+        <template #updated="{updated}">
+          {{ toLocal(updated) }}
         </template>
       </pv-table>
     </article>
@@ -21,16 +29,21 @@ export default {
       'created',
       'updated'
     ]
+    const loading = Vue.ref(true)
 
     async function getDefs() {
+      loading.value = true
       defs.value = await api('definitions')
+      loading.value = false
     }
 
     Vue.onBeforeMount(getDefs)
 
     return {
       defs,
-      fields
+      fields,
+      toLocal,
+      loading
     }
   }
 }
