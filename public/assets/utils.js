@@ -9,7 +9,7 @@ export async function api(u, m, b) {
 }
 
 export function toLocal(str = null) {
-  return str ? new Date(str).toLocaleString() : '...'
+  return str ? new Date(str + (!str.match(/Z$/) ? 'Z' : '')).toLocaleString() : '...'
 }
 
 export function toTimeStr(n = 0) {
@@ -20,23 +20,18 @@ export function toTimeStr(n = 0) {
   return [h, m, s].map(n => pad(n)).join(':') + `.${pad(n % 1000, 3)}`
 }
 
-export function getTimezonesWithOffsets() {
-  const results = []
-  for (let timeZone of Intl.supportedValuesOf("timeZone")) {
-    const options = { timeZone, timeZoneName: "longOffset" }
-    const dateText = Intl.DateTimeFormat([], options).format(new Date())
-    let timezoneString = dateText.split(" ")[1].slice(3) || "+0"
-    let offsetNum = parseInt(timezoneString.split(":")[0]) * 60
-    if (timezoneString.includes(":"))
-      offsetNum = offsetNum + parseInt(timezoneString.split(":")[1])
-    let offset = offsetNum / 60
-    let offsetRawNum = Math.abs(offset)
-    let mins = !Number.isInteger(offsetRawNum) ? Math.abs(offsetNum) % 60 : 0
-    let hours = Math.floor(offsetRawNum)
-    offset = `${offset < 0 ? "-" : "+"}${("" + hours).padStart(2, "0")}:${("" + mins).padStart(2, "0")}`
-    results.push({ timeZone, offsetNum, offset })
+export function getTimeZoneOffsets() {
+  const timezoneOffsets = []
+  for (let offset = -12 * 60; offset <= 14 * 60; offset += 30) {
+    const date = new Date(Date.UTC(null, 0, 1, 0, 0, 0, 0))
+    date.setMinutes(date.getMinutes() + offset)
+    const formattedOffset = (offset >= 0 ? '+' : '-') +
+      Math.abs(Math.ceil(offset / 60)).toString().padStart(2, '0') + ':' +
+      (Math.abs(offset) % 60).toString().padStart(2, '0')
+    timezoneOffsets.push({
+      offset: formattedOffset,
+      timeZone: 'UTC' + formattedOffset
+    })
   }
-  return results
-    .filter((tz, x, s) => x === s.findIndex(o => o.timeZone.match(new RegExp(`(${tz.timeZone.split('\/')[0]}|New_York)`)) && o.offset == tz.offset))
-    .toSorted((a, b) => a.offsetNum - b.offsetNum)
+  return timezoneOffsets
 }
