@@ -2,6 +2,9 @@ import { toLocal, toTimeStr } from '../utils.js'
 
 export default {
   template: `<article>
+    <label>
+      <input type="date" v-model="date" @change="getJobs">
+    </label>
     <pv-table :items="jobs" :fields="fields" :busy="loading" sort filter>
       <template #id="{id}">
         <router-link :to="'/jobs/'+id">View</router-link>
@@ -33,11 +36,12 @@ export default {
       'endTime',
       'elapsed'
     ]
+    const date = Vue.ref(new Date().toISOString().slice(0, 10))
     const loading = Vue.ref(true)
-    
+
     async function getJobs() {
       loading.value = true
-      jobs.value = await fetch('/api/jobs/history').then(r=>r.json())
+      jobs.value = await fetch(`/api/jobs/history?date=${date.value}`).then(r => r.json())
       loading.value = false
     }
 
@@ -45,9 +49,11 @@ export default {
 
     return {
       jobs,
+      getJobs,
       fields,
       toLocal,
       toTimeStr,
+      date,
       loading
     }
   }

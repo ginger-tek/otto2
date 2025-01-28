@@ -15,8 +15,8 @@ router.get('/', (_req, res) => {
   res.json(list())
 })
 
-router.get('/history', (_req, res) => {
-  res.json(listHistory())
+router.get('/history', (req, res) => {
+  res.json(listHistory(req.query.date || null))
 })
 
 router.get('/:id', (req, res) => {

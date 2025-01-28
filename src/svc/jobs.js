@@ -28,14 +28,16 @@ export function list() {
     .all()
 }
 
-export function listHistory() {
+export function listHistory(date = null) {
+  if (!date) date = new Date().toISOString().slice(0, 10)
   return connect()
     .prepare(`select j.*, d.name as defName
       from jobs j
       left join definitions d on d.id = j.defId
       where j.status in ('Completed','Failed')
+      and strftime('%Y-%m-%d', j.updated) = :date
       order by j.updated desc`)
-    .all()
+    .all({ date })
 }
 
 export function listScheduled() {
