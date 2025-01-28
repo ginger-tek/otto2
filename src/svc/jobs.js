@@ -28,12 +28,31 @@ export function list() {
     .all()
 }
 
+export function listHistory() {
+  return connect()
+    .prepare(`select j.*, d.name as defName
+      from jobs j
+      left join definitions d on d.id = j.defId
+      where j.status in ('Completed','Failed')
+      order by j.updated desc`)
+    .all()
+}
+
 export function listScheduled() {
   return connect()
     .prepare(`select j.*, d.name as defName
       from jobs j
       left join definitions d on d.id = j.defId
       where j.status = 'Scheduled'`)
+    .all()
+}
+
+export function listMonitor() {
+  return connect()
+    .prepare(`select j.*, d.name as defName
+      from jobs j
+      left join definitions d on d.id = j.defId
+      where j.created > datetime('now','-10 minutes');`)
     .all()
 }
 

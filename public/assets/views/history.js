@@ -2,7 +2,7 @@ import { toLocal, toTimeStr } from '../utils.js'
 
 export default {
   template: `<article>
-    <pv-table :items="jobs" :fields="fields">
+    <pv-table :items="jobs" :fields="fields" :busy="loading" sort filter>
       <template #id="{id}">
         <router-link :to="'/jobs/'+id">View</router-link>
       </template>
@@ -18,6 +18,9 @@ export default {
       <template #elapsed="{elapsed}">
         {{ toTimeStr(elapsed) }}
       </template>
+      <template #empty>
+        No job execution history to show
+      </template>
     </pv-table>
   </article>`,
   setup() {
@@ -30,9 +33,12 @@ export default {
       'endTime',
       'elapsed'
     ]
+    const loading = Vue.ref(true)
     
     async function getJobs() {
-      jobs.value = await fetch('/api/jobs').then(r=>r.json())
+      loading.value = true
+      jobs.value = await fetch('/api/jobs/history').then(r=>r.json())
+      loading.value = false
     }
 
     Vue.onMounted(getJobs)
@@ -41,7 +47,8 @@ export default {
       jobs,
       fields,
       toLocal,
-      toTimeStr
+      toTimeStr,
+      loading
     }
   }
 }

@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { create, list, read, update, destroy } from '../svc/jobs.js'
+import { create, list, listHistory, read, update, destroy } from '../svc/jobs.js'
 import fs from 'fs'
 
 const router = Router()
@@ -13,6 +13,10 @@ router.post('/', (req, res) => {
 
 router.get('/', (_req, res) => {
   res.json(list())
+})
+
+router.get('/history', (_req, res) => {
+  res.json(listHistory())
 })
 
 router.get('/:id', (req, res) => {

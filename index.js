@@ -8,7 +8,7 @@ import { Server } from 'socket.io'
 import pkg from './package.json' with { type: 'json' }
 import { createLogStream, createLogger, delayMs } from './src/utils.js'
 import apiController from './src/cntlr/api.js'
-import { list } from './src/svc/jobs.js'
+import { listMonitor } from './src/svc/jobs.js'
 
 const port = process.env.PORT || 4000
 const app = express()
@@ -45,7 +45,7 @@ const io = new Server(http)
 io.on('connection', socket => {
   const sendJobData = async () => {
     while (socket.connected) {
-      const jobs = list()
+      const jobs = listMonitor()
       socket.emit('monitor-data', jobs)
       await delayMs(1000 - new Date().getMilliseconds())
     }
